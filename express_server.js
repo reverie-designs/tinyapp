@@ -18,17 +18,22 @@ app.get("/", (req, res) => {
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
-
+//summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase}  ;
   res.render('urls_index.ejs', templateVars);
 });
-
+//make new tiny url page
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+//access the long url of short url
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
 
+//get urls.json object which has the database of our urls
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
