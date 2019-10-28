@@ -3,13 +3,16 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-
-app.set('view engine', 'ejs'); //sets ejs as the view engine - templating engine
+const bodyParser = require("body-parser"); //translates post data
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+app.use(bodyParser.urlencoded({extended: true})); //decodes post data from buffer into string
+
+app.set('view engine', 'ejs'); //sets ejs as the view engine - templating engine
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -26,6 +29,10 @@ app.get("/urls", (req, res) => {
 //make new tiny url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+app.post("/urls", (req, res) => {
+    console.log(req.body);
+    res.send('Ok');
 });
 //access the long url of short url
 app.get("/urls/:shortURL", (req, res) => {
