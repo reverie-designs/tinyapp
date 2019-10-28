@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/reverie-designs/tinyapp/issues"
   },
-  "homepage": "https://github.com/reverie-designs/tinyapp#readme"
+  "homepage": "https://github.com/reverie-designs/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
