@@ -10,6 +10,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//This function was taken from https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript/9719815 - generates an 8 character rrandom string
+var randomstring = function() {
+  Math.random().toString(36).slice(-8)
+};
+
 app.use(bodyParser.urlencoded({extended: true})); //decodes post data from buffer into string
 
 app.set('view engine', 'ejs'); //sets ejs as the view engine - templating engine
