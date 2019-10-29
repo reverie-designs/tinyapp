@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //translates post data
-const methodOverride = require("method-override");
+// const methodOverride = require("method-override");
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -20,7 +20,7 @@ var randomString = function (){
 app.use(bodyParser.urlencoded({extended: true})); 
 
 //uses method override to conver post to put
-app.use(methodOverride('_method'));
+// app.use(methodOverride('_method'));
 
 //sets ejs as the view engine - templating engine
 app.set('view engine', 'ejs'); 
@@ -30,7 +30,6 @@ app.get("/", (req, res) => {
   // res.send("Hello!");
   res.redirect("/urls/");
 });
-
 
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
@@ -73,9 +72,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 //delete a short url and redirect to main page
-app.post("urls/:shortURL/delete", (req, res) => {
+app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  console.log(req.params.shortURL);
+  // console.log(req.params.shortURL);
   res.redirect('/urls');
 });
 
