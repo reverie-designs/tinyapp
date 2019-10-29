@@ -27,21 +27,33 @@ app.get("/hello", (req, res) => {
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase}  ;
-  res.render('urls_index.ejs', templateVars);
+  res.render('urls_index', templateVars);
 });
 //make new tiny url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
-app.post("/urls", (req, res) => {
-    console.log(req.body);
-    urlDatabase[randomString] = req.body.longURL;
-    res.sendStatus(200)
-});
+
+
 //access the long url of short url
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
+});
+
+
+app.post("/urls", (req, res) => {
+    // console.log(req.body);
+    let shortURL = `${randomString}`;
+    urlDatabase[shortURL] = req.body.longURL;
+    // console.log(urlDatabase);
+    res.redirect(`/urls/${shortURL}`);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  console.log(req.body);
+  // const longURL = urlDatabase[shortURL];
+  // res.redirect(longURL);
 });
 
 //get urls.json object which has the database of our urls
