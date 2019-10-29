@@ -45,6 +45,8 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+
+
 //creating a new tiny url and adding it to the urlDatabase
 app.post("/urls", (req, res) => {
     let shortURL = `${randomString}`;
@@ -55,6 +57,13 @@ app.post("/urls", (req, res) => {
 //redirecting short url to long url
 app.get("/u/:shortURL", (req, res) => {
   res.redirect(302);
+});
+
+//delete a short url and redirect to main page
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  console.log(req.params.shortURL);
+  res.redirect('/urls');
 });
 
 //get urls.json object which has the database of our urls
