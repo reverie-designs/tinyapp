@@ -51,9 +51,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log(req.body);
-  // const longURL = urlDatabase[shortURL];
-  // res.redirect(longURL);
+  res.redirect(302);
 });
 
 //get urls.json object which has the database of our urls
@@ -64,3 +62,5 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+//need to add code for edge cases where the short code doesn't exist
