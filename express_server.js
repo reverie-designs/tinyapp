@@ -11,8 +11,9 @@ const urlDatabase = {
 };
 
 //This function was taken from https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript/9719815 - generates an 8 character rrandom string
-var randomString = Math.random().toString(36).slice(-8);
-
+var randomString = function (){
+  return Math.random().toString(36).slice(-8);
+}
 app.use(bodyParser.urlencoded({extended: true})); //decodes post data from buffer into string
 
 app.set('view engine', 'ejs'); //sets ejs as the view engine - templating engine
@@ -45,11 +46,9 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
-
 //creating a new tiny url and adding it to the urlDatabase
 app.post("/urls", (req, res) => {
-    let shortURL = `${randomString}`;
+    let shortURL = randomString();
     urlDatabase[shortURL] = req.body.longURL;
     res.redirect(`/urls/${shortURL}`);
 });
