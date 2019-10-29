@@ -46,6 +46,11 @@ app.get("/urls", (req, res) => {
   res.render('urls_index', templateVars);
 });
 
+//login
+app.post("/login", (req, res) => {
+  console.log("Someone tried to sign in");
+});
+
 //make new tiny url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
