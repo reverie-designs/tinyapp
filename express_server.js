@@ -17,41 +17,42 @@ app.use(bodyParser.urlencoded({extended: true})); //decodes post data from buffe
 
 app.set('view engine', 'ejs'); //sets ejs as the view engine - templating engine
 
+//redirects home page to /urls
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  // res.send("Hello!");
+  res.redirect("/urls/");
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
+//TEST CODE
+// app.get("/hello", (req, res) => {
+//   res.redirect("/urls/");
+// });
+
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase}  ;
   res.render('urls_index', templateVars);
 });
+
 //make new tiny url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-
 //access the long url of short url
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
-  console.log(req.params.shortURL);
-  console.log(templateVars);
   res.render("urls_show", templateVars);
 });
 
-
+//creating a new tiny url and adding it to the urlDatabase
 app.post("/urls", (req, res) => {
-    // console.log(req.body);
     let shortURL = `${randomString}`;
     urlDatabase[shortURL] = req.body.longURL;
-    // console.log(urlDatabase);
     res.redirect(`/urls/${shortURL}`);
 });
 
+//redirecting short url to long url
 app.get("/u/:shortURL", (req, res) => {
   res.redirect(302);
 });
