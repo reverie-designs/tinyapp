@@ -2,6 +2,7 @@
 
 const express = require("express");
 const app = express();
+cookieParser = require('cookie-parser')
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //translates post data
 // const methodOverride = require("method-override");
@@ -16,9 +17,10 @@ var randomString = function (){
   return Math.random().toString(36).slice(-8);
 }
 
+
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true})); 
-
+app.use(cookieParser());
 //uses method override to conver post to put
 // app.use(methodOverride('_method'));
 
@@ -30,6 +32,13 @@ app.get("/", (req, res) => {
   // res.send("Hello!");
   res.redirect("/urls/");
 });
+
+// catching cookies
+app.get('/', function (req, res) {
+  
+  console.log('Cookies: ', req.cookies)
+
+})
 
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
