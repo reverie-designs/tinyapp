@@ -49,6 +49,9 @@ app.get("/urls", (req, res) => {
 //login
 app.post("/login", (req, res) => {
   console.log("Someone tried to sign in");
+  console.log(req.body.username);
+  res.cookie('username', req.body.username);
+  res.redirect("/urls");
 });
 
 //make new tiny url page
