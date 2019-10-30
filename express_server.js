@@ -19,8 +19,35 @@ const randomString = function (){
   return Math.random().toString(36).slice(-8);
 };
 
-//Will store user registration
-let users = {};
+//Will store user registration ===================================
+let users = {
+  'radomId': {
+    id: 'radomID',
+    email: 'email',
+    password: 'password',
+  },
+  'radomID2': {
+    id: 'radomID',
+    email: 'test@mail.com',
+    password: 'password',
+  }
+};
+
+
+//does registration email already exist?
+
+const emailExists = (email) => {
+  const userIds = Object.keys(users)
+  let usersArray = Object.entries(users);
+  for (let userId of userIds) {
+    console.log('THIS IS THE INCOMIG VAR:', email);
+    console.log('THIS IS THE USERS FILE', users[userId].email);
+    if (users[userId].email === email) {
+      return true;
+    }
+  }
+  return false;
+};
 
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true})); 
@@ -34,29 +61,37 @@ app.set('view engine', 'ejs');
 
 //redirects home page to /urls
 app.get("/", (req, res) => {
-  // res.send("Hello!");
   res.redirect("/urls/");
 });
 
 
 // displays summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, username: req.cookies.username};
+  let templateVars = {urls: urlDatabase, username: req.cookies.userId};
   res.render('urls_index', templateVars);
 });
 
 //gets registration page
 app.get("/urls_register", (req, res) => {
-  let templateVars = {urls: urlDatabase, username: req.cookies.username};
+  let templateVars = {urls: urlDatabase, username: req.cookies.userID};
   res.render('urls_register', templateVars);
 });
 
 //adding new user
 app.post('/register', (req, res) => {
-  const userId = randomString();
-  users[userId] = {id: userId, email: req.body.email, password: req.body.password};
-  res.cookie('userID:', userId);
-  res.redirect('/urls');
+  if (req.body.email === "" || req.body.password === "") {
+    res.send('Please fill in both fields in order to register');
+    res.sendStatus(400);  
+  } else if (emailExists(req.body.email)) {
+    console.log('============ ', req.body.email);
+    res.send('We already have a user registered with that email address');
+    res.sendStatus(400); 
+  } else {
+    const userId = randomString();
+    users[userId] = {id: userId, email: req.body.email, password: req.body.password};
+    res.cookie('userID', userId);
+    res.redirect('/urls');
+  }
 });
 
 //login get cookies
