@@ -17,7 +17,10 @@ var randomString = function (){
   return Math.random().toString(36).slice(-8);
 }
 
+//storing cookies
+// let templateVars = {
 
+// };
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true})); 
 app.use(cookieParser());
@@ -42,21 +45,33 @@ app.get('/', function (req, res) {
 
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase}  ;
+  let templateVars = {urls: urlDatabase, username: req.cookies.username};
   res.render('urls_index', templateVars);
 });
 
-//login
+//login get cookies
 app.post("/login", (req, res) => {
   console.log("Someone tried to sign in");
-  console.log(req.body.username);
+  // console.log(req.body.username);
+  console.log(req.cookies.username);
+  // templateVars.username = req.body.username;
   res.cookie('username', req.body.username);
   res.redirect("/urls");
 });
 
+//logout clear cookies
+app.post("/logout", (req, res) => {
+  res.clearCookie('username', req.cookies.username);
+  res.redirect("/urls");
+});
+
+// let templateVars = {
+//   username: req.cookies["username"]
+// };
 //make new tiny url page
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+app.get("/urls/new", (req, res) => { 
+  // console.log(templateVars.username);
+  res.render("urls_new", {username: req.cookies.username});
 });
 
 //access the long url of short url
