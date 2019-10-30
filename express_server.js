@@ -2,7 +2,7 @@
 
 const express = require("express");
 const app = express();
-cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser'); //assists with cookies
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //translates post data
 // const methodOverride = require("method-override");
@@ -12,18 +12,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-//This function was taken from https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript/9719815 - generates an 8 character rrandom string
-var randomString = function (){
+//This function was taken from:
+// https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript/9719815 
+// it generates an 8 character random string
+const randomString = function (){
   return Math.random().toString(36).slice(-8);
-}
+};
 
-//storing cookies
-// let templateVars = {
+//Will store user registration
+let users = {};
 
-// };
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true})); 
 app.use(cookieParser());
+
 //uses method override to conver post to put
 // app.use(methodOverride('_method'));
 
@@ -36,25 +38,29 @@ app.get("/", (req, res) => {
   res.redirect("/urls/");
 });
 
+
+// displays summary of current short and long urls in your database
+app.get("/urls", (req, res) => {
+  let templateVars = {urls: urlDatabase, username: req.cookies.username};
+  res.render('urls_index', templateVars);
+});
+
 //gets registration page
 app.get("/urls_register", (req, res) => {
   let templateVars = {urls: urlDatabase, username: req.cookies.username};
   res.render('urls_register', templateVars);
 });
 
-//summary of current short and long urls in your database
-app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, username: req.cookies.username};
-  res.render('urls_index', templateVars);
+//adding new user
+app.post('/register', (req, res) => {
+  const userId = randomString();
+  users[userId] = {id: userId, email: req.body.email, password: req.body.password};
+  res.cookie('userID:', userId);
+  res.redirect('/urls');
 });
-
 
 //login get cookies
 app.post("/login", (req, res) => {
-  console.log("Someone tried to sign in");
-  // console.log(req.body.username);
-  console.log(req.cookies.username);
-  // templateVars.username = req.body.username;
   res.cookie('username', req.body.username);
   res.redirect("/urls");
 });
@@ -65,12 +71,8 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// let templateVars = {
-//   username: req.cookies["username"]
-// };
 //make new tiny url page
 app.get("/urls/new", (req, res) => { 
-  // console.log(templateVars.username);
   res.render("urls_new", {username: req.cookies.username});
 });
 
@@ -106,7 +108,6 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 //delete a short url and redirect to main page
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  // console.log(req.params.shortURL);
   res.redirect('/urls');
 });
 
