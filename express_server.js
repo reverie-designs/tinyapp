@@ -37,11 +37,11 @@ app.get("/", (req, res) => {
 });
 
 // catching cookies
-app.get('/', function (req, res) {
+// app.get('/', function (req, res) {
   
-  console.log('Cookies: ', req.cookies)
+//   console.log('Cookies: ', req.cookies)
 
-})
+// })
 
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
