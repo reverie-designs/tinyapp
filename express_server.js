@@ -36,18 +36,18 @@ app.get("/", (req, res) => {
   res.redirect("/urls/");
 });
 
-// catching cookies
-// app.get('/', function (req, res) {
-  
-//   console.log('Cookies: ', req.cookies)
-
-// })
+//gets registration page
+app.get("/urls_register", (req, res) => {
+  let templateVars = {urls: urlDatabase, username: req.cookies.username};
+  res.render('urls_register', templateVars);
+});
 
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase, username: req.cookies.username};
   res.render('urls_index', templateVars);
 });
+
 
 //login get cookies
 app.post("/login", (req, res) => {
