@@ -62,7 +62,6 @@ app.get("/", (req, res) => {
 });
 
 
-
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase, user: users[req.cookies.userId]};
@@ -95,19 +94,25 @@ app.post('/register', (req, res) => {
   }
 });
 
-//login get cookies
-app.post("/login", (req, res) => {
-  console.log("Someone tried to sign in");
-  // console.log(req.body.username);
-  console.log(req.cookies.username);
-  // templateVars.username = req.body.username;
-  res.cookie('username', req.body.username);
-  res.redirect("/urls");
+//login page
+app.get("/login", (req, res) => {
+  let templateVars = {urls: urlDatabase, user: users[req.cookies.userId]};
+  res.render('urls_login', templateVars);
 });
+
+// //login get cookies
+// app.post("/login", (req, res) => {
+//   console.log("Someone tried to sign in");
+//   // console.log(req.body.username);
+//   console.log(req.cookies.username);
+//   // templateVars.username = req.body.username;
+//   res.cookie('username', req.body.username);
+//   res.redirect("/urls");
+// });
 
 //logout clear cookies
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.cookies.username);
+  res.clearCookie('userId', req.cookies.userId);
   res.redirect("/urls");
 });
 
@@ -122,9 +127,11 @@ app.get("/urls/new", (req, res) => {
 
 //access the long url of short url
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies.username};
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], userId: req.cookies.userId};
   res.render("urls_show", templateVars);
 });
+
+
 
 //creating a new tiny url and adding it to the urlDatabase
 app.post("/urls", (req, res) => {
