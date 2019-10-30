@@ -69,7 +69,7 @@ app.get("/urls", (req, res) => {
 });
 
 //gets registration page
-app.get("/urls_register", (req, res) => {
+app.get("/urls/register", (req, res) => {
   console.log(users[req.cookies.userId]);
   let templateVars = {urls: urlDatabase, user: users[req.cookies.userId]};
   res.render('urls_register', templateVars);
@@ -95,7 +95,7 @@ app.post('/register', (req, res) => {
 });
 
 //login page
-app.get("/login", (req, res) => {
+app.get("/urls/login", (req, res) => {
   let templateVars = {urls: urlDatabase, user: users[req.cookies.userId]};
   res.render('urls_login', templateVars);
 });

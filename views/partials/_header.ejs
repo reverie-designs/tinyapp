@@ -10,6 +10,10 @@
               <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
             </div>
             <div> 
+              <a href="/urls/register"><button type="button" class="btn btn-outline-light d-inline-flex">Log In</button></a>
+              <a href="/urls/login"><button type="button" class="btn btn-outline-light d-inline-flex">Register</button></a>
+                
+                
               <% if (!user) { %>
               <form method="POST" action="/login" class="form-inline my-2 my-lg-0">
                 <input type="text" class="form-control mr-sm-2" name="username" placeholder="username">
