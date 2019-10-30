@@ -113,7 +113,7 @@ app.post("/login", (req, res) => {
     res.sendStatus(403);
   } else {
     if (users[userId].password !== password) {
-      res.send('The password doesn\'t match the provided username');
+      res.send('The password doesn\'t match the provided email');
       res.sendStatus(403);
     } else {
       res.cookie('userId', getUserByEmail(email));
