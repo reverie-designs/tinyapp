@@ -76,7 +76,7 @@ app.get("/urls/new", (req, res) => {
 
 //access the long url of short url
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies.username};
   res.render("urls_show", templateVars);
 });
 
