@@ -9,16 +9,10 @@
               <a class="nav-item nav-link" href="/urls">My URLs</a>
               <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
             </div>
-            <div> 
-              <a href="/urls/login"><button type="button" class="btn btn-outline-light d-inline-flex">Log In</button></a>
-              <a href="/urls/register"><button type="button" class="btn btn-outline-light d-inline-flex">Register</button></a>
-                
-                
+            <div>  
               <% if (!user) { %>
-              <form method="POST" action="/login" class="form-inline my-2 my-lg-0">
-                <input type="text" class="form-control mr-sm-2" name="username" placeholder="username">
-                <button type="submit" class="btn btn-outline-light my-2 my-sm-0">Sign In</button>
-              </form>
+                <a href="/urls/login"><button type="button" class="btn btn-outline-light d-inline-flex">Log In</button></a>
+                <a href="/urls/register"><button type="button" class="btn btn-outline-light d-inline-flex">Register</button></a>
               <%} else { %>
                 <div class="d-flex">
                     <p class="d-inline-flex pr-5 text-white h3">Hello <%= user.email %></p>

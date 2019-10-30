@@ -45,8 +45,6 @@ let users = {
 const emailExists = (email) => {
   const userIds = Object.keys(users)
   for (let userId of userIds) {
-    console.log('THIS IS THE INCOMIG VAR:', email);
-    console.log('THIS IS THE USERS FILE', users[userId].email);
     if (users[userId].email === email) {
       return true;
     }
@@ -56,8 +54,6 @@ const emailExists = (email) => {
 const getUserByEmail = (email) => {
   const userIds = Object.keys(users)
   for (let userId of userIds) {
-    console.log('THIS IS THE INCOMIG VAR:', email);
-    console.log('THIS IS THE USERS FILE', users[userId].email);
     if (users[userId].email === email) {
       return userId;
     }
@@ -79,7 +75,6 @@ app.get("/urls", (req, res) => {
 
 //gets registration page
 app.get("/urls/register", (req, res) => {
-  console.log(users[req.cookies.userId]);
   let templateVars = {urls: urlDatabase, user: users[req.cookies.userId]};
   res.render('urls_register', templateVars);
 });
@@ -92,7 +87,6 @@ app.post('/register', (req, res) => {
     res.sendStatus(400);  
   //cannot have user with same email address
   } else if (emailExists(req.body.email)) {
-    console.log('============ ', req.body.email);
     res.send('We already have a user registered with that email address');
     res.sendStatus(400); 
   } else {
@@ -136,8 +130,8 @@ app.post("/logout", (req, res) => {
 
 //make new tiny url page
 app.get("/urls/new", (req, res) => { 
-  // console.log(templateVars.username);
-  res.render("urls_new", {username: req.cookies.username});
+  let templateVars = {user: users[req.cookies.userId]};
+  res.render("urls_new", templateVars);
 });
 
 //access the long url of short url
@@ -174,7 +168,6 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 //delete a short url and redirect to main page
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  // console.log(req.params.shortURL);
   res.redirect('/urls');
 });
 
