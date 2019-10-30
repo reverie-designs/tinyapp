@@ -44,7 +44,6 @@ let users = {
 
 const emailExists = (email) => {
   const userIds = Object.keys(users)
-  let usersArray = Object.entries(users);
   for (let userId of userIds) {
     console.log('THIS IS THE INCOMIG VAR:', email);
     console.log('THIS IS THE USERS FILE', users[userId].email);
@@ -54,6 +53,16 @@ const emailExists = (email) => {
   }
 };
 
+const getUserByEmail = (email) => {
+  const userIds = Object.keys(users)
+  for (let userId of userIds) {
+    console.log('THIS IS THE INCOMIG VAR:', email);
+    console.log('THIS IS THE USERS FILE', users[userId].email);
+    if (users[userId].email === email) {
+      return userId;
+    }
+  }
+};
 
 //redirects home page to /urls
 app.get("/", (req, res) => {
@@ -100,15 +109,24 @@ app.get("/urls/login", (req, res) => {
   res.render('urls_login', templateVars);
 });
 
-// //login get cookies
-// app.post("/login", (req, res) => {
-//   console.log("Someone tried to sign in");
-//   // console.log(req.body.username);
-//   console.log(req.cookies.username);
-//   // templateVars.username = req.body.username;
-//   res.cookie('username', req.body.username);
-//   res.redirect("/urls");
-// });
+//login get cookies
+app.post("/login", (req, res) => {
+  let email = req.body.email;
+  let userId = getUserByEmail(email);
+  let password = req.body.password;
+  if (!userId){
+    res.send('Could not find user with that email');
+    res.sendStatus(403);
+  } else {
+    if (users[userId].password !== password) {
+      res.send('The password doesn\'t match the provided username');
+      res.sendStatus(403);
+    } else {
+      res.cookie('userId', getUserByEmail(email));
+      res.redirect("/urls");
+    }
+  }
+});
 
 //logout clear cookies
 app.post("/logout", (req, res) => {
@@ -116,9 +134,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// let templateVars = {
-//   username: req.cookies["username"]
-// };
 //make new tiny url page
 app.get("/urls/new", (req, res) => { 
   // console.log(templateVars.username);
