@@ -131,7 +131,11 @@ app.post("/logout", (req, res) => {
 //make new tiny url page
 app.get("/urls/new", (req, res) => { 
   let templateVars = {user: users[req.cookies.userId]};
-  res.render("urls_new", templateVars);
+  if (templateVars.userId){
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/urls/login");
+  }
 });
 
 //access the long url of short url
