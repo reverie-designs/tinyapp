@@ -2,10 +2,10 @@
 
 const express = require("express");
 const app = express();
-cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser')
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //translates post data
-// const methodOverride = require("method-override");
+const bcrypt = require('bcrypt');
 
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true})); 
@@ -98,7 +98,11 @@ app.post('/register', (req, res) => {
     res.sendStatus(400); 
   } else {
     const userId = randomString();
-    users[userId] = {id: userId, email: req.body.email, password: req.body.password};
+    const textPassword = req.body.password;
+    console.log('PASSWORD',textPassword);
+    const password = bcrypt.hashSync(textPassword, 10);
+    console.log('PASSWORD',password);
+    users[userId] = {id: userId, email: req.body.email, password: password};
     res.cookie('userId', userId);
     res.redirect('/urls');
   }
@@ -112,23 +116,24 @@ app.get("/urls/login", (req, res) => {
 
 //login get cookies
 app.post("/login", (req, res) => {
-  let email = req.body.email;
-  let userId = getUserByEmail(email);
-  let password = req.body.password;
+  const email = req.body.email;
+  const userId = getUserByEmail(email);
   if (!userId){
     res.send('Could not find user with that email');
     res.sendStatus(403);
   } else {
-    if (users[userId].password !== password) {
+    const password = req.body.password;
+    let userPassword = users[userId].password;
+    if (bcrypt.compareSync(password, userPassword)) {
+      res.cookie('userId', getUserByEmail(email));
+      res.redirect("/urls");   
+    } else {
       res.send('The password doesn\'t match the provided email');
       res.sendStatus(403);
-    } else {
-      res.cookie('userId', getUserByEmail(email));
-      res.redirect("/urls");
     }
   }
 });
-
+console.log(users);
 //logout clear cookies
 app.post("/logout", (req, res) => {
   res.clearCookie('userId', req.cookies.userId);
