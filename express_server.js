@@ -63,9 +63,7 @@ const getUserByEmail = (email) => {
 };
 
 const getURLSByUserId = (userID) => {
-  // console.log(userID);
   const urlIds = Object.keys(urlDatabase);
-  // console.log(urlIds);
   let userUrls = {};
   if (userID){
     urlIds.forEach((item) => {
@@ -80,7 +78,6 @@ const getURLSByUserId = (userID) => {
 
 //redirects home page to /urls
 app.get("/", (req, res) => {
-  // res.send("Hello!");
   res.redirect("/urls/");
 });
 
@@ -88,12 +85,7 @@ app.get("/", (req, res) => {
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
   let userId = req.cookies.userId;
-  // console.log(userId);
   let userURLS = getURLSByUserId(userId);
-  // console.log('USER URLS', userURLS);
-  // for (let userUrl of userURLS){
-  //   console.log('USER short URLS', userUrl.shortURL);
-  // }
   let templateVars = {user: users[req.cookies.userId], urls: userURLS};
   res.render('urls_index', templateVars);
 });
@@ -165,14 +157,9 @@ app.get("/urls/new", (req, res) => {
 
 //redirecting short url to long url
 app.get("/u/:shortURL", (req, res) => {
-  // console.log('=======THis IS THE BODY', req.params.longURL);
   let urlID = req.params.shortURL;
-  console.log('THIS IS YOUR URL ID', urlID);
   const shortURL = urlDatabase[urlID];
-  // console.log('your URL Object', shortURL);
   const longURL = shortURL.longURL;
-  console.log('YOU LONG URL', longURL);
-  // console.log(urlId, 'THIS IS YOUR URL OBJECT');
   if (longURL){
     res.redirect(longURL);
   } else {
@@ -180,25 +167,13 @@ app.get("/u/:shortURL", (req, res) => {
     res.send('Sorry we don\'t have any urls that match your request');
   }
 });
-//redirect to edit a long url
-// app.get("/urls/:shortURL", (req, res) => {
-//   let userId = req.cookies.userId;
-//   console.log('COOKIE', userId);
-//   let userURLS = getURLSByUserId(userId);
-//   console.log('COOKIE URLS', userURLS);
-//   let url = userURLS[req.params.shortURL];
-//   let templateVars = {'longURL': url.longURL, 'shortURL': url.shortURL, userId: req.cookies.userId, user: users[userId]};
-//   res.redirect(`/urls/${req.params.shortURL}`, templateVars);
-// });
 
 //creating a new tiny url and adding it to the urlDatabase
 app.post("/urls", (req, res) => {
   let shortURL = randomString();
   let longURL = req.body.longURL
-  // console.log('THIS Is YOUR LONG URL', longURL);
   let userId = req.cookies.userId;
   urlDatabase[shortURL] = {'longURL': longURL, 'userID': userId};
-  console.log('UPDATED DATA BASE:', urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
