@@ -17,8 +17,10 @@ app.use(cookieParser());
 app.set('view engine', 'ejs'); 
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { 
+    longURL: "https://www.tsn.ca", 
+    userID: 'radomID2' 
+  },
 };
 
 //This function was taken from https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript/9719815 - generates an 8 character rrandom string
@@ -60,6 +62,22 @@ const getUserByEmail = (email) => {
   }
 };
 
+const getURLSByUserId = (userID) => {
+  // console.log(userID);
+  const urlIds = Object.keys(urlDatabase);
+  // console.log(urlIds);
+  let userUrls = {};
+  if (userID){
+    urlIds.forEach((item) => {
+      if (urlDatabase[item].userID === userID) {
+        urlDatabase[item].shortURL = item;
+        userUrls[item] = (urlDatabase[item]);
+      }
+    });
+    return userUrls;
+  }
+};
+
 //redirects home page to /urls
 app.get("/", (req, res) => {
   // res.send("Hello!");
@@ -69,7 +87,14 @@ app.get("/", (req, res) => {
 
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, user: users[req.cookies.userId]};
+  let userId = req.cookies.userId;
+  // console.log(userId);
+  let userURLS = getURLSByUserId(userId);
+  // console.log('USER URLS', userURLS);
+  // for (let userUrl of userURLS){
+  //   console.log('USER short URLS', userUrl.shortURL);
+  // }
+  let templateVars = {user: users[req.cookies.userId], urls: userURLS};
   res.render('urls_index', templateVars);
 });
 
@@ -130,49 +155,84 @@ app.post("/logout", (req, res) => {
 
 //make new tiny url page
 app.get("/urls/new", (req, res) => { 
-  let templateVars = {user: users[req.cookies.userId]};
-  if (templateVars.userId){
+  let templateVars = {user: users[req.cookies.userId], };
+  if (templateVars.user){
     res.render("urls_new", templateVars);
   } else {
     res.redirect("/urls/login");
   }
 });
 
-//access the long url of short url
-app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], userId: req.cookies.userId};
+//redirecting short url to long url
+app.get("/u/:shortURL", (req, res) => {
+  // console.log('=======THis IS THE BODY', req.params.longURL);
+  let urlID = req.params.shortURL;
+  console.log('THIS IS YOUR URL ID', urlID);
+  const shortURL = urlDatabase[urlID];
+  // console.log('your URL Object', shortURL);
+  const longURL = shortURL.longURL;
+  console.log('YOU LONG URL', longURL);
+  // console.log(urlId, 'THIS IS YOUR URL OBJECT');
+  if (longURL){
+    res.redirect(longURL);
+  } else {
+    res.status(404);
+    res.send('Sorry we don\'t have any urls that match your request');
+  }
+});
+//redirect to edit a long url
+// app.get("/urls/:shortURL", (req, res) => {
+//   let userId = req.cookies.userId;
+//   console.log('COOKIE', userId);
+//   let userURLS = getURLSByUserId(userId);
+//   console.log('COOKIE URLS', userURLS);
+//   let url = userURLS[req.params.shortURL];
+//   let templateVars = {'longURL': url.longURL, 'shortURL': url.shortURL, userId: req.cookies.userId, user: users[userId]};
+//   res.redirect(`/urls/${req.params.shortURL}`, templateVars);
+// });
+
+//creating a new tiny url and adding it to the urlDatabase
+app.post("/urls", (req, res) => {
+  let shortURL = randomString();
+  let longURL = req.body.longURL
+  // console.log('THIS Is YOUR LONG URL', longURL);
+  let userId = req.cookies.userId;
+  urlDatabase[shortURL] = {'longURL': longURL, 'userID': userId};
+  console.log('UPDATED DATA BASE:', urlDatabase);
+  res.redirect(`/urls/${shortURL}`);
+});
+
+//redirect to short url page after url creation
+app.get("/urls/:ID", (req, res) => {
+  let userId = req.cookies.userId;
+  let userUrls = getURLSByUserId(userId);
+  let url = userUrls[req.params.ID];
+  let templateVars = {'longURL': url.longURL, 'shortURL': url.shortURL, userId: req.cookies.userId, user: users[userId]};
   res.render("urls_show", templateVars);
 });
 
 
 
-//creating a new tiny url and adding it to the urlDatabase
-app.post("/urls", (req, res) => {
-    let shortURL = randomString();
-    urlDatabase[shortURL] = req.body.longURL;
-    res.redirect(`/urls/${shortURL}`);
-});
-
-//redirecting short url to long url
-app.get("/u/:shortURL", (req, res) => {
-  res.redirect(302);
-});
-
-//redirect to edit a long url
-app.get("/urls/:shortURL", (req, res) => {
-  res.redirect(`/urls/${req.params.shortURL}`);
-});
 
 //edit long url
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.longURL;
-  res.redirect(`/urls`);
+  if(req.cookies.userId){
+    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    res.redirect(`/urls`);
+  } else {
+    res.redirect(`/urls`);
+  }
+  
 });
 
 //delete a short url and redirect to main page
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect('/urls');
+  if(!req.cookies.userId){
+    res.redirect('/urls/login');
+  } else {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls');
+  }
 });
 
 //get urls.json object which has the database of our urls
