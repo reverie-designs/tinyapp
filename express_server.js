@@ -42,16 +42,6 @@ let users = {
   }
 };
 
-//does registration email already exist?
-
-const emailExists = (email) => {
-  const userIds = Object.keys(users)
-  for (let userId of userIds) {
-    if (users[userId].email === email) {
-      return true;
-    }
-  }
-};
 
 const getUserByEmail = (email) => {
   const userIds = Object.keys(users)
@@ -63,10 +53,10 @@ const getUserByEmail = (email) => {
 };
 
 const getURLSByUserId = (userID) => {
-  const urlIds = Object.keys(urlDatabase);
+  const urlIDs = Object.keys(urlDatabase);
   let userUrls = {};
   if (userID){
-    urlIds.forEach((item) => {
+    urlIDs.forEach((item) => {
       if (urlDatabase[item].userID === userID) {
         urlDatabase[item].shortURL = item;
         userUrls[item] = (urlDatabase[item]);
@@ -103,7 +93,7 @@ app.post('/register', (req, res) => {
     res.send('Please fill in both fields in order to register');
     res.sendStatus(400);  
   //cannot have user with same email address
-  } else if (emailExists(req.body.email)) {
+  } else if (getUserByEmail(req.body.email)) {
     res.send('We already have a user registered with that email address');
     res.sendStatus(400); 
   } else {
