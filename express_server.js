@@ -2,11 +2,11 @@
 const express = require("express");
 const app = express();
 const PORT = 3000; // default port 8080
-// const cookieParser = require('cookie-parser')//==============NEED TO UNINSTALL+methodOverride(
 const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser"); //translates post data
 const bcrypt = require('bcrypt');
-
+//Helpers
+const {getUserIDByEmail} = require('./helpers');
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -52,14 +52,14 @@ const errors = {
   noURLS: 'Sorry we don\'t have any urls that match your request',
 }
 
-const getUserByEmail = (email) => {
-  const userIds = Object.keys(users);
-  for (let userId of userIds) {
-    if (users[userId].email === email) {
-      return userId;
-    }
-  }
-};
+// const getUserByEmail = (email) => {
+//   const userIds = Object.keys(users);
+//   for (let userId of userIds) {
+//     if (users[userId].email === email) {
+//       return userId;
+//     }
+//   }
+// };
 
 const getURLSByUserId = (userID) => {
   const urlIDs = Object.keys(urlDatabase);
@@ -102,7 +102,7 @@ app.post('/register', (req, res) => {
     res.send(errors.bothFields.bold());
     res.status(400);
   //cannot have user with same email address
-  } else if (getUserByEmail(req.body.email)) {
+  } else if (getUserIDByEmail(req.body.email, users)) {
     res.status(400);
     res.send(errors.registrationEmail.bold());
   } else {
@@ -124,7 +124,7 @@ app.get("/urls/login", (req, res) => {
 //login get cookies
 app.post("/login", (req, res) => {
   const email = req.body.email;
-  const userId = getUserByEmail(email);
+  const userId = getUserIDByEmail(email, users);
   if (!userId) {
     res.status(403); 
     res.send(errors.loginEmail.bold());
