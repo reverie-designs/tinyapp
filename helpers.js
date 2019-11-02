@@ -21,5 +21,12 @@ const getURLSByUserID = (userID, urlDatabase) => {
   }
 };
 
+const renderError = (status, title,  msg) => {
+  return `<div style="text-align: center; margin-top: 10%;">
+                 <h1>${title} ${status}</h1>
+                 <p style="font-size: 1.5em; text-decoration: underline;">${msg}</p>
+                 <p>Go back to <a href="/urls">TinyApp</a></p>
+               </div>`;
+ };
 
-module.exports = {getUserIDByEmail, getURLSByUserID};
+module.exports = {getUserIDByEmail, getURLSByUserID, renderError};

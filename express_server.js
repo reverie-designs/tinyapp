@@ -5,7 +5,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //translates post data
 const cookieSession = require('cookie-session'); //scrambled cookies
 const bcrypt = require('bcrypt'); //encryptor
-const {getUserIDByEmail, getURLSByUserID} = require('./helpers'); //Helper Functions
+const {getUserIDByEmail, getURLSByUserID, renderError} = require('./helpers'); //Helper Functions
 
 
 //decodes post data from buffer into string
@@ -54,8 +54,9 @@ const errors = {
   registrationEmail: 'Sorry, we already have user registered with that email address.',
   loginEmail: 'Sorry, we could not find a user registered with thtat email address.',
   password: 'The password doesn\'t match the user email, please try again.',
-  bothFields: 'Please fill in both fields in order to register',
+  bothFields: 'You have to fill in both fields in order to register',
   noURLS: 'Sorry we don\'t have any urls that match your request',
+  forbidden: 'You must be logged in to access this feature'
 };
 
 
@@ -84,12 +85,12 @@ app.get("/urls/register", (req, res) => {
 app.post('/register', (req, res) => {
   //no emtpy strings
   if (req.body.email === "" || req.body.password === "") {
-    res.send(errors.bothFields.bold());
     res.status(400);
+    // res.send(renderError(400, 'BAD REQUEST', errors.bothFields));
   //cannot have user with same email address
   } else if (getUserIDByEmail(req.body.email, users)) {
     res.status(400);
-    res.send(errors.registrationEmail.bold());
+    // res.send(renderError(400, 'BAD REQUEST', errors.registrationEmail));
   } else {
     const userId = randomString();
     const textPassword = req.body.password;
@@ -114,7 +115,7 @@ app.post("/login", (req, res) => {
   const userId = getUserIDByEmail(email, users);
   if (!userId) {
     res.status(403);
-    res.send(errors.loginEmail.bold());
+    // res.send(renderError(403, 'FORBIDDEN - Already Exists', errors.loginEmail));
   } else {
     const password = req.body.password;
     let userPassword = users[userId].password;
@@ -123,8 +124,7 @@ app.post("/login", (req, res) => {
       res.redirect("/urls");
     } else {
       res.status(403);
-      res.send(errors.password.bold());
-      // res.redirect("urls_errors", error);
+      // res.send(renderError(403, 'FORBIDDEN - No Matches', errors.password));
     }
   }
 });
@@ -157,7 +157,7 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
   } else {
     res.status(404);
-    res.send(errors.noURLS.bold());
+    // res.send(renderError(404, 'NOT FOUND', errors.noURLS));
   }
 });
 
@@ -174,32 +174,37 @@ app.post("/urls", (req, res) => {
 
 //redirect to short url page after url creation
 app.get("/urls/:ID", (req, res) => {
-  let userUrls = getURLSByUserID(req.session.userId, urlDatabase);
-  let url = userUrls[req.params.ID];
-  let templateVars = {'longURL': url.longURL, 'shortURL': url.shortURL, userId: req.session.userId, user: users[req.session.userId]};
-  res.render("urls_show", templateVars);
+  let userURLS = getURLSByUserID(req.session.userId, urlDatabase);
+  if (!req.session.userId || userURLS === 'undefined') {
+    res.status(403);
+    res.send(renderError(403, 'FORBIDDEN', errors.forbidden));
+  } else {
+    let url = userURLS[req.params.ID];
+    let templateVars = {'longURL': url.longURL, 'shortURL': url.shortURL, userId: req.session.userId, user: users[req.session.userId]};
+    res.render("urls_show", templateVars);
+  }
 });
 
 
 //edit long url
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.post("/urls/:ID/edit", (req, res) => {
   let urls = getURLSByUserID(req.session.userId, urlDatabase);
   if (!req.session.userId || !urls) {
     res.redirect(`/urls`);
   } else {
-    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    urlDatabase[req.params.ID].longURL = req.body.longURL;
     res.redirect(`/urls`);
   }
 });
 
 
 //delete url from database and redirect to main page
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.post("/urls/:ID/delete", (req, res) => {
   let urls = getURLSByUserID(req.session.userId, urlDatabase);
   if (!req.session.userId || !urls) {
     res.redirect('/urls/login');
   } else {
-    delete urlDatabase[req.params.shortURL];
+    delete urlDatabase[req.params.ID];
     res.redirect('/urls');
   }
 });
