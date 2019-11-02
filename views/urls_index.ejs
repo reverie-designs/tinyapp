@@ -12,41 +12,47 @@
     <% include partials/_header %>
   <main style="margin: 1em;">
     <% if (!user) { %>
-      <div>
-          <p>Please Log In or Register</p>
-        </div>
+      <div class="text-center m-auto w-50 border border-primary px-5 py-5">
+        <h1>Weclome to Tiny App</h1>
+        <p class="lead">Tiny URLS for <strong class="h3">BIG</strong> needs!</p>
+        <p class="mb-4">You have to be logged-in in order to create your tiny URL.</p>
+        <a href="/urls/login"><button type="button" class="btn btn-primary d-inline-flex pr-4 pl-4 mr-3">Log In</button></a>
+        <a href="/urls/register"><button type="button" class="btn btn-primary d-inline-flex">Register</button></a>
+      </div>
     
     <%} else {%>
-      <h3>My URLs</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Short URL</th>
-            <th scope="col">Long URL</th>
-            <th>Delete</th>
-            <th>Edit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% for(let url of Object.values(urls)) { %>
+      <div>
+        <h3>My URLs</h3>
+        <table class="table">
+          <thead>
             <tr>
-              <td><%= url.shortURL %></td>
-              <td><%= url.longURL %></td>
-              <td>
-                <form method="POST" action="urls/<%= url.shortURL %>/delete">
-                <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
-            </td>
-              <td>
-                <a href="urls/<%= url.shortURL %>">
-                 <button type="button" class="btn btn-outline-danger">Edit</button> 
-                </a>
-            </td>
+              <th scope="col">Short URL</th>
+              <th scope="col">Long URL</th>
+              <th>Delete</th>
+              <th>Edit</th>
             </tr>
-          <% } %>
-        </tbody>
-      </table>
-      <p><a href="/urls/new">Shorten a URL</a></p>
+          </thead>
+          <tbody>
+            <% for(let url of Object.values(urls)) { %>
+              <tr>
+                <td><%= url.shortURL %></td>
+                <td><%= url.longURL %></td>
+                <td>
+                  <form method="POST" action="urls/<%= url.shortURL %>/delete">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </td>
+                <td>
+                  <a href="urls/<%= url.shortURL %>">
+                  <button type="button" class="btn btn-outline-danger">Edit</button> 
+                  </a>
+              </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+        <p><a href="/urls/new">Shorten a URL</a></p>
+      </div>
     <% } %>
   </main>
   <!-- Bootstrap JS -->
