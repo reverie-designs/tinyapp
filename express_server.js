@@ -2,21 +2,25 @@
 const express = require("express");
 const app = express();
 const PORT = 3000; // default port 8080
-const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser"); //translates post data
-const bcrypt = require('bcrypt');
-//Helpers
-const {getUserIDByEmail} = require('./helpers');
+const cookieSession = require('cookie-session'); //scrambled cookies
+const bcrypt = require('bcrypt'); //encryptor
+const {getUserIDByEmail, getURLSByUserID} = require('./helpers'); //Helper Functions
+
+
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true}));
+
+
 app.use(cookieSession({
   name: 'session',
   keys: ['magic', 'words'],
 }));
-// app.use(cookieParser());
+
 
 //sets ejs as the view engine - templating engine
 app.set('view engine', 'ejs');
+
 
 const urlDatabase = {
   b6UTxQ: {
@@ -25,12 +29,13 @@ const urlDatabase = {
   },
 };
 
+
 //This function was taken from https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript/9719815 - generates an 8 character rrandom string
 const randomString = function() {
   return Math.random().toString(36).slice(-8);
 };
 
-//Will store user registration ===================================
+
 let users = {
   'radomId': {
     id: 'radomID',
@@ -44,6 +49,7 @@ let users = {
   }
 };
 
+
 const errors = {
   registrationEmail: 'Sorry, we already have user registered with that email address.',
   loginEmail: 'Sorry, we could not find a user registered with thtat email address.',
@@ -52,28 +58,6 @@ const errors = {
   noURLS: 'Sorry we don\'t have any urls that match your request',
 }
 
-// const getUserByEmail = (email) => {
-//   const userIds = Object.keys(users);
-//   for (let userId of userIds) {
-//     if (users[userId].email === email) {
-//       return userId;
-//     }
-//   }
-// };
-
-const getURLSByUserId = (userID) => {
-  const urlIDs = Object.keys(urlDatabase);
-  let userUrls = {};
-  if (userID) {
-    urlIDs.forEach((item) => {
-      if (urlDatabase[item].userID === userID) {
-        urlDatabase[item].shortURL = item;
-        userUrls[item] = (urlDatabase[item]);
-      }
-    });
-    return userUrls;
-  }
-};
 
 //redirects home page to /urls
 app.get("/", (req, res) => {
@@ -83,8 +67,7 @@ app.get("/", (req, res) => {
 
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
-  let userId = req.session.userId;
-  let userURLS = getURLSByUserId(userId);
+  let userURLS = getURLSByUserID(req.session.userId, urlDatabase);
   let templateVars = {user: users[req.session.userId], urls: userURLS};
   res.render('urls_index', templateVars);
 });
@@ -94,6 +77,7 @@ app.get("/urls/register", (req, res) => {
   let templateVars = {urls: urlDatabase, user: users[req.session.userId]};
   res.render('urls_register', templateVars);
 });
+
 
 //adding new user get cookies
 app.post('/register', (req, res) => {
@@ -115,11 +99,13 @@ app.post('/register', (req, res) => {
   }
 });
 
+
 //login page
 app.get("/urls/login", (req, res) => {
   let templateVars = {urls: urlDatabase, user: users[req.session.userId]};
   res.render('urls_login', templateVars);
 });
+
 
 //login get cookies
 app.post("/login", (req, res) => {
@@ -142,11 +128,13 @@ app.post("/login", (req, res) => {
   }
 });
 
+
 //logout clear cookies
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
+
 
 //make new tiny url page
 app.get("/urls/new", (req, res) => {
@@ -171,6 +159,7 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+
 //creating a new tiny url and adding it to the urlDatabase
 app.post("/urls", (req, res) => {
   let shortURL = randomString();
@@ -180,33 +169,31 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+
 //redirect to short url page after url creation
 app.get("/urls/:ID", (req, res) => {
-  let userId = req.session.userId;
-  let userUrls = getURLSByUserId(userId);
+  let userUrls = getURLSByUserID(req.session.userId, urlDatabase);
   let url = userUrls[req.params.ID];
-  let templateVars = {'longURL': url.longURL, 'shortURL': url.shortURL, userId: req.session.userId, user: users[userId]};
+  let templateVars = {'longURL': url.longURL, 'shortURL': url.shortURL, userId: req.session.userId, user: users[req.session.userId]};
   res.render("urls_show", templateVars);
 });
 
 
-
-
 //edit long url
 app.post("/urls/:shortURL/edit", (req, res) => {
-  let urls = getURLSByUserId(req.session.userId);
+  let urls = getURLSByUserID(req.session.userId, urlDatabase);
   if (!req.session.userId || !urls) {
     res.redirect(`/urls`);
   } else {
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     res.redirect(`/urls`);
   }
-  
 });
+
 
 //delete a short url and redirect to main page
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let urls = getURLSByUserId(req.session.userId);
+  let urls = getURLSByUserID(req.session.userId, urlDatabase);
   if (!req.session.userId || !urls) {
     res.redirect('/urls/login');
   } else {
@@ -215,11 +202,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
+
 //get urls.json object which has the database of our urls
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
