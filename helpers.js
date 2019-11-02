@@ -1,4 +1,4 @@
-const getUserIDByEmail = (email, userDatabase)=>{
+const getUserIDByEmail = (email, userDatabase) => { 
   const userIds = Object.keys(userDatabase);
   for (let userId of userIds) {
     if (userDatabase[userId].email === email) {
@@ -23,7 +23,7 @@ const getURLSByUserID = (userID, urlDatabase) => {
 };
 
 
-const renderError = (status, title,  msg) => {
+const renderError = (status, title, msg) => {
   return `<div style="text-align: center; margin-top: 10%;">
                  <h1>${title} ${status}</h1>
                  <p style="font-size: 1.5em; text-decoration: underline;">${msg}</p>
