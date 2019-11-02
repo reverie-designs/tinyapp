@@ -86,11 +86,11 @@ app.post('/register', (req, res) => {
   //no emtpy strings
   if (req.body.email === "" || req.body.password === "") {
     res.status(400);
-    // res.send(renderError(400, 'BAD REQUEST', errors.bothFields));
+    res.send(renderError(400, 'BAD REQUEST', errors.bothFields));
   //cannot have user with same email address
   } else if (getUserIDByEmail(req.body.email, users)) {
     res.status(400);
-    // res.send(renderError(400, 'BAD REQUEST', errors.registrationEmail));
+    res.send(renderError(400, 'BAD REQUEST', errors.registrationEmail));
   } else {
     const userId = randomString();
     const textPassword = req.body.password;
@@ -115,7 +115,7 @@ app.post("/login", (req, res) => {
   const userId = getUserIDByEmail(email, users);
   if (!userId) {
     res.status(403);
-    // res.send(renderError(403, 'FORBIDDEN - Already Exists', errors.loginEmail));
+    res.send(renderError(403, 'NOT FOUND', errors.loginEmail));
   } else {
     const password = req.body.password;
     let userPassword = users[userId].password;
@@ -124,7 +124,7 @@ app.post("/login", (req, res) => {
       res.redirect("/urls");
     } else {
       res.status(403);
-      // res.send(renderError(403, 'FORBIDDEN - No Matches', errors.password));
+      res.send(renderError(403, 'No Matches', errors.password));
     }
   }
 });
@@ -157,16 +157,16 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
   } else {
     res.status(404);
-    // res.send(renderError(404, 'NOT FOUND', errors.noURLS));
+    res.send(renderError(404, 'NOT FOUND', errors.noURLS));
   }
 });
 
 
 //creating a new tiny url and adding it to the urlDatabase
 app.post("/urls", (req, res) => {
+  let userId = req.session.userId;
   let shortURL = randomString();
   let longURL = req.body.longURL;
-  let userId = req.session.userId;
   urlDatabase[shortURL] = {'longURL': longURL, 'userID': userId};
   res.redirect(`/urls/${shortURL}`);
 });
