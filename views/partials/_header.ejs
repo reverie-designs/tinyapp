@@ -15,7 +15,7 @@
                 <a href="/urls/register"><button type="button" class="btn btn-outline-light d-inline-flex">Register</button></a>
               <%} else { %>
                 <div class="d-flex">
-                    <p class="d-inline-flex pr-5 text-white h3">Hello <%= user.email %></p>
+                    <p class="d-inline-flex pr-5 text-white mt-2 h5">Hello <%= user.email %></p>
                     <form method="POST" action="/logout">
                     <button type="submit" class="btn btn-outline-light d-inline-flex">Log Out</button>
                   </form>
