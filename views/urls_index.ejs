@@ -15,6 +15,9 @@
       <div class="text-center m-auto w-50 border border-primary px-5 py-5">
         <h1>Weclome to Tiny App</h1>
         <p class="lead">Tiny URLS for <strong class="h3">BIG</strong> needs!</p>
+        <div>
+          <img src="/static/<%= img %>" alt="">
+        </div>
         <hr>
         <p class="mb-4">You have to be logged-in in order to create your tiny URL.</p>
         <a href="/urls/login"><button type="button" class="btn btn-primary d-inline-flex pr-4 pl-4 mr-3">Log In</button></a>
@@ -23,7 +26,7 @@
     
     <%} else {%>
       <div class="text-center">
-        <h3>My URLs</h3>
+        <h3 class="mb-2">My URLs</h3>
         <table class="table border border-primary">
           <thead class="bg-primary text-white">
             <tr>

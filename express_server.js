@@ -11,11 +11,15 @@ const {getUserIDByEmail, getURLSByUserID, renderError} = require('./helpers'); /
 //decodes post data from buffer into string
 app.use(bodyParser.urlencoded({extended: true}));
 
-
+//encoded cookier parser
 app.use(cookieSession({
   name: 'session',
   keys: ['magic', 'words'],
 }));
+
+
+//statis path for extra files
+app.use('/static', express.static('public'))
 
 
 //sets ejs as the view engine - templating engine
@@ -28,26 +32,10 @@ const randomString = function() {
 };
 
 
-let users = {
-  'radomId': {
-    id: 'radomID',
-    email: 'email@gma.com',
-    password: 'password',
-  },
-  'radomID2': {
-    id: 'radomID',
-    email: 'test@mail.com',
-    password: 'password',
-  }
-};
+let users = {};
 
 
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: 'radomID2'
-  },
-};
+const urlDatabase = {};
 
 
 const errors = {
@@ -69,7 +57,7 @@ app.get("/", (req, res) => {
 //summary of current short and long urls in your database
 app.get("/urls", (req, res) => {
   let userURLS = getURLSByUserID(req.session.userId, urlDatabase);
-  let templateVars = {user: users[req.session.userId], urls: userURLS};
+  let templateVars = {user: users[req.session.userId], urls: userURLS, img: "shrinking_giant.gif"};
   res.render('urls_index', templateVars);
 });
 
