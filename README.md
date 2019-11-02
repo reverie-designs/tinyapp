@@ -22,14 +22,14 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - Install all dependencies (using the `npm install` command).
 - Run the development web server using the `node express_server.js` command.
 - You should see `TinyApp listening on port 8080!` in your terminal
-- Head on over to your favourite browser and enter -> [localhost:8080]. Welcome to Tiny App
+- Head on over to your favourite browser and enter -> `localhost:8080`
 - Create an account in order to make your tiny URL
-- To share your tiny URL with friends use `localhost:8080/u/`<your short URL goes here> Note: you do not have to be logged in in order to share the tiny URL
+- To share your tiny URL with friends use `localhost:8080/u/`<your short URL goes here> Note: you do not have to be logged-in in order to share the tiny URL
 - Edit or Delete your URL with the buttons on the main page
 - Log-out until next time!
 - As long as the server is not down or restarted your session will be remembered.
 - Have your family and friends create more profiles and tiny URLS!
-- To exit the server <ctrl+c>
+- To exit the server `<ctrl+c>`
 
 ## Documentation
 The following functions are implemented in this app, you can find them in helpers.js file in the main directory
