@@ -1,7 +1,7 @@
 //express_server.js
 const express = require("express");
 const app = express();
-const PORT = 3000; // default port 8080
+const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //translates post data
 const cookieSession = require('cookie-session'); //scrambled cookies
 const bcrypt = require('bcrypt'); //encryptor
@@ -20,14 +20,6 @@ app.use(cookieSession({
 
 //sets ejs as the view engine - templating engine
 app.set('view engine', 'ejs');
-
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: 'radomID2'
-  },
-};
 
 
 //This function was taken from https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript/9719815 - generates an 8 character rrandom string
@@ -50,13 +42,21 @@ let users = {
 };
 
 
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: 'radomID2'
+  },
+};
+
+
 const errors = {
   registrationEmail: 'Sorry, we already have user registered with that email address.',
   loginEmail: 'Sorry, we could not find a user registered with thtat email address.',
   password: 'The password doesn\'t match the user email, please try again.',
   bothFields: 'Please fill in both fields in order to register',
   noURLS: 'Sorry we don\'t have any urls that match your request',
-}
+};
 
 
 //redirects home page to /urls
@@ -71,6 +71,7 @@ app.get("/urls", (req, res) => {
   let templateVars = {user: users[req.session.userId], urls: userURLS};
   res.render('urls_index', templateVars);
 });
+
 
 //gets registration page
 app.get("/urls/register", (req, res) => {
@@ -112,7 +113,7 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const userId = getUserIDByEmail(email, users);
   if (!userId) {
-    res.status(403); 
+    res.status(403);
     res.send(errors.loginEmail.bold());
   } else {
     const password = req.body.password;
@@ -122,7 +123,7 @@ app.post("/login", (req, res) => {
       res.redirect("/urls");
     } else {
       res.status(403);
-      res.send(errors.password.bold())
+      res.send(errors.password.bold());
       // res.redirect("urls_errors", error);
     }
   }
@@ -136,7 +137,7 @@ app.post("/logout", (req, res) => {
 });
 
 
-//make new tiny url page
+//new tiny url page
 app.get("/urls/new", (req, res) => {
   let templateVars = {user: users[req.session.userId], };
   if (templateVars.user) {
@@ -145,6 +146,7 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/urls/login");
   }
 });
+
 
 //redirecting short url to long url
 app.get("/u/:shortURL", (req, res) => {
@@ -191,7 +193,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 
-//delete a short url and redirect to main page
+//delete url from database and redirect to main page
 app.post("/urls/:shortURL/delete", (req, res) => {
   let urls = getURLSByUserID(req.session.userId, urlDatabase);
   if (!req.session.userId || !urls) {
